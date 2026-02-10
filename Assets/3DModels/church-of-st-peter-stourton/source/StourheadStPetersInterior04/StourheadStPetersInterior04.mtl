@@ -1,0 +1,18 @@
+newmtl StourheadStPetersInterior01_Model_5:StourheadStPetersInterior01_Model_5_u1_v1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd StourheadStPetersInterior01_Model_5_u1_v1_diffuse.jpg
+Ni 1.00
+Ks 0.30 0.30 0.30
+Ns 0.00
+newmtl StourheadStPetersInterior01_Model_5:StourheadStPetersInterior01_Model_5_u2_v1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+map_Kd StourheadStPetersInterior01_Model_5_u2_v1_diffuse.jpg
+Ni 1.00
+Ks 0.30 0.30 0.30
+Ns 0.00
