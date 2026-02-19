@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Scenes/KacyScene.unity
+    guid: b87f80d704676174497bb4de10556db7
+  - enabled: 1
     path: Assets/Scenes/StartScene.unity
     guid: bfe8727ba6fd76d418fde496bc685fa8
   - enabled: 1
