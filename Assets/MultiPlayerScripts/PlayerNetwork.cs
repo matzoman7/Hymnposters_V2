@@ -1,31 +1,33 @@
 using UnityEngine;
-using PurrNet;
+using Unity.Netcode;
 using System.Collections;
 
-public class PlayerNetwork : NetworkIdentity // NetworkIdentity lets this object exist on the network
+public class PlayerNetwork : NetworkBehaviour
 {
-    //This script is on a prefab that gets Instantiated by the PersistNetwork script, which is on the NetworkManager.
-    protected override void OnSpawned()// called when this object spawns on the network
+    // Called when this object spawns on the network
+    public override void OnNetworkSpawn()
     {
-        base.OnSpawned();
-        SendNameToServer(LobbyCreation.PlayerName);// send this player's name to the server
+        if (IsOwner) // Only the owner sends their name
+        {
+            SendNameToServerRpc(LobbyCreation.PlayerName);
+        }
     }
 
-    [ServerRpc(requireOwnership: false)]// this method runs on the server, anyone can call it
-    private void SendNameToServer(string name)
+    [ServerRpc] // Runs on the server
+    private void SendNameToServerRpc(string name)
     {
-        StartCoroutine(BroadcastAfterDelay(name));
+        StartCoroutine(BroadcastAfterDelay(name)); // Add delay before broadcasting
     }
 
-    private IEnumerator BroadcastAfterDelay(string name)// coroutine that adds a small delay before broadcasting. Without it the client/joined player did not recieve the info.
+    private IEnumerator BroadcastAfterDelay(string name)
     {
-        yield return new WaitForSeconds(0.5f);
-        ReceiveNameOnClients(name);
+        yield return new WaitForSeconds(2f); // Wait for clients to be ready
+        ReceiveNameOnClientsClientRpc(name);
     }
 
-    [ObserversRpc]// this method runs on every connected player
-    private void ReceiveNameOnClients(string name)
+    [ClientRpc] // Runs on all clients
+    private void ReceiveNameOnClientsClientRpc(string name)
     {
-        PlayerListUI.Instance?.AddPlayer(name);// add the name to the player list UI if it exists
+        PlayerListUI.Instance?.AddPlayer(name); // Add to the player list
     }
 }
