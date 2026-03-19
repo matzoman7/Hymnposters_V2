@@ -16,7 +16,7 @@ public class UserInput : MonoBehaviour
         Invoke("DisableInput", 0.01f);
         //send hymn to GM
         Invoke("ResetField", 2f);
-        playerID = (playerID % 4) + 1;
+        playerID = (playerID + 1) % 4;
     }
 
     public void DisableInput()
