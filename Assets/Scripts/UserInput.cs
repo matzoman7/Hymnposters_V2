@@ -11,13 +11,14 @@ public class UserInput : MonoBehaviour
     {
         Debug.Log(hymn);
         ulong playerID = NetworkManager.Singleton.LocalClientId;// Get the ClientId from Netcode
-        GameManager.instance.AddHymn(playerID, hymn);
+        GameManager.instance.SubmitHymnServerRpc(playerID, hymn);
         // clear input field
         playerInput.text = "";
         Invoke("DisableInput", 0.01f);
         //send hymn to GM
         Invoke("ResetField", 2f);
         playerID = (playerID + 1) % 4;
+
     }
 
     public void DisableInput()

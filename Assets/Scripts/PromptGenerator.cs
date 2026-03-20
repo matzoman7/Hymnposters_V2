@@ -7,6 +7,7 @@ public class PromptGenerator : MonoBehaviour
     [SerializeField] private List<string> prompts = new List<string>();
     public string currentPrompt;
     public TextMeshProUGUI promptUI;
+    
     private Dictionary<int, string> usedPrompts = new Dictionary<int, string>();
     
     public void GeneratePrompt()

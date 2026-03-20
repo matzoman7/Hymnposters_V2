@@ -41,7 +41,13 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     }
 
     // Add a hymn to a player's list
-    public void AddHymn(ulong clientId, string hymn)
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SubmitHymnServerRpc(ulong clientId, string hymn)
+    {
+        AddHymnServer(clientId, hymn);
+    }
+    public void AddHymnServer(ulong clientId, string hymn)
     {
         // If this player doesn't have a list yet, create one
         if (!playerHymns.ContainsKey(clientId))
@@ -49,7 +55,7 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 
         // Add the hymn to their list
         playerHymns[clientId].Add(hymn);
-        Debug.Log($"Player {clientId} submitted hymn: {hymn}");
+        Debug.Log($"[SERVER] Player {clientId} submitted hymn: {hymn}");
     }
 
     // End the current turn and move to the next player
