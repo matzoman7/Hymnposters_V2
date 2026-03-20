@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,11 +7,10 @@ public class UserInput : MonoBehaviour
 {
     [Header("Inscribed")]
     public TMP_InputField playerInput;
-    public ulong playerID;//NetCode automatillcay makes playerId's ulong
-    public void GetUserInput()
+    public void GetUserInput(string hymn)
     {
-        string hymn = playerInput.text;
         Debug.Log(hymn);
+        ulong playerID = NetworkManager.Singleton.LocalClientId;// Get the ClientId from Netcode
         GameManager.instance.AddHymn(playerID, hymn);
         // clear input field
         playerInput.text = "";

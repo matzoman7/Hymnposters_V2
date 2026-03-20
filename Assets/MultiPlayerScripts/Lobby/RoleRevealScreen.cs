@@ -13,6 +13,13 @@ public class RoleRevealScreen : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"RoleRevealScreen: PlayerManager.AllPlayers.Count = {PlayerManager.AllPlayers.Count}");
+
+        foreach (var kvp in PlayerManager.AllPlayers)
+        {
+            Debug.Log($"  ClientId {kvp.Key}: Name={kvp.Value.PlayerName}, Role={kvp.Value.Role}");
+        }
+
         // Debug logs to see what's happening
         Debug.Log($"PlayerManager.Instance is null? {PlayerManager.Instance == null}");
 
