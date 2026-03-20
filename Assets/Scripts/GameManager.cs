@@ -10,7 +10,7 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     // Key: ClientId (0, 1, 2, 3...)
     // Value: List of hymns that player has submitted
     public Dictionary<ulong, List<string>> playerHymns = new Dictionary<ulong, List<string>>();
-
+    public string currentPrompt;
     // NetworkVariable automatically syncs across all clients - everyone sees the same value
     // This tracks whose turn it currently is by their ClientId
     private NetworkVariable<ulong> currentTurnClientId = new NetworkVariable<ulong>(0); // Starts at 0 (host goes first)
@@ -24,7 +24,15 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 
     private void Start()
     {
-        //Generate Prompt
+        if (IsServer)
+        {
+            PromptGenerator promptGen = FindObjectOfType<PromptGenerator>();
+            if (promptGen != null)
+            {
+                promptGen.GeneratePromptServerRpc();
+            }
+        }
+
     }
 
     // Check if it's the local player's turn (the player on this computer)
