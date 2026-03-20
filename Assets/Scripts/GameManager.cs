@@ -22,6 +22,11 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         else Destroy(gameObject);
     }
 
+    private void Start()
+    {
+        //Generate Prompt
+    }
+
     // Check if it's the local player's turn (the player on this computer)
     public bool IsMyTurn()
     {
