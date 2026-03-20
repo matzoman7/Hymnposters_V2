@@ -9,7 +9,6 @@ public class WaitingRoomManager : NetworkBehaviour
     [SerializeField] private string _gameSceneName = "RoleReveal";
 
     private List<string> _allPlayerNames = new List<string>();
-    public static Dictionary<ulong, string> PlayerRoles = new Dictionary<ulong, string>();
 
     private void Start()
     {
@@ -23,18 +22,31 @@ public class WaitingRoomManager : NetworkBehaviour
         // Every client sends their name to the server when they join
         if (IsClient)
         {
-            SendPlayerNameServerRpc(LobbyCreation.PlayerName);
+            Invoke(nameof(SendPlayerName), 0.5f); // Small delay to ensure everything is ready
         }
     }
 
-    [ServerRpc(RequireOwnership = false)] // Runs on server, any client can call
-    private void SendPlayerNameServerRpc(string playerName)
+    private void SendPlayerName()
     {
-        // Add new player to the server's list
+        Debug.Log($"Sending player name: {LobbyCreation.PlayerName}");
+        SendPlayerNameServerRpc(LobbyCreation.PlayerName);
+    }
+
+    [ServerRpc(RequireOwnership = false)] // Runs on server, any client can call
+    private void SendPlayerNameServerRpc(string playerName, ServerRpcParams serverRpcParams = default)
+    {
+        // Get the ClientId of the player who sent this
+        ulong clientId = serverRpcParams.Receive.SenderClientId;
+
+        // Add player to PlayerManager with their ClientId and name
+        PlayerManager.Instance.AddPlayer(clientId, playerName);
+
+        // Add new player to the server's name list (for UI display)
         if (!_allPlayerNames.Contains(playerName))
         {
             _allPlayerNames.Add(playerName);
         }
+
         // Tell all clients to refresh their player list display
         RefreshAllClientsListClientRpc();
     }
@@ -100,25 +112,25 @@ public class WaitingRoomManager : NetworkBehaviour
 
     private void AssignRolesAndStart()
     {
-        PlayerRoles.Clear();
-
         // Get all connected players
-        List<ulong> allPlayers = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
+        List<ulong> allPlayerIds = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
 
         // Randomly pick one to be the Fallen Angel
-        int randomIndex = Random.Range(0, allPlayers.Count);
-        ulong fallenAngelId = allPlayers[randomIndex];
+        int randomIndex = Random.Range(0, allPlayerIds.Count);
+        ulong fallenAngelClientId = allPlayerIds[randomIndex];
 
-        Debug.Log($"Assigning roles - Fallen Angel: {fallenAngelId}");
+        Debug.Log($"Assigning roles - Fallen Angel: {fallenAngelClientId}");
 
-        // Assign roles to everyone
-        foreach (ulong clientId in allPlayers)
+        // Assign roles to everyone using PlayerManager
+        foreach (ulong clientId in allPlayerIds)
         {
-            string role = (clientId == fallenAngelId) ? "Fallen Angel" : "Angel";
-            PlayerRoles[clientId] = role;
+            string assignedRole = (clientId == fallenAngelClientId) ? "Fallen Angel" : "Angel";
 
-            // Send each player their role
-            SendRoleClientRpc(role, new ClientRpcParams
+            // Update PlayerManager with the role
+            PlayerManager.Instance.SetPlayerRole(clientId, assignedRole);
+
+            // Send each player their role via ClientRpc
+            SendRoleClientRpc(assignedRole, new ClientRpcParams
             {
                 Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } }
             });
@@ -129,12 +141,17 @@ public class WaitingRoomManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void SendRoleClientRpc(string role, ClientRpcParams clientRpcParams = default)
+    private void SendRoleClientRpc(string assignedRole, ClientRpcParams clientRpcParams = default)
     {
-        // Store this client's role in the dictionary
-        ulong myId = NetworkManager.Singleton.LocalClientId;
-        PlayerRoles[myId] = role;
-        Debug.Log($"Received role: {role}");
+        // Store this client's role in PlayerManager
+        ulong localClientId = NetworkManager.Singleton.LocalClientId;
+
+        // Make sure the player exists in PlayerManager first
+        if (PlayerManager.AllPlayers.ContainsKey(localClientId))
+        {
+            PlayerManager.Instance.SetPlayerRole(localClientId, assignedRole);
+            Debug.Log($"Received role: {assignedRole}");
+        }
     }
 
     private void LoadGameScene()
