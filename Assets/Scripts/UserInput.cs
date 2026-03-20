@@ -6,7 +6,7 @@ public class UserInput : MonoBehaviour
 {
     [Header("Inscribed")]
     public TMP_InputField playerInput;
-    public int playerID;
+    public ulong playerID;//NetCode automatillcay makes playerId's ulong
     public void GetUserInput(string hymn)
     {
         Debug.Log(hymn);

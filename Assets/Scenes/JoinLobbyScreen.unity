@@ -1133,6 +1133,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.824125
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.79762965
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 5.519287
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -4.288025
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 32010444423992273, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2.144043
+      objectReference: {fileID: 0}
     - target: {fileID: 3037394846354712435, guid: d38e3e69cc4eca746896fade40e986b4, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1818,6 +1850,7 @@ GameObject:
   - component: {fileID: 1259590575}
   - component: {fileID: 1259590577}
   - component: {fileID: 1259590576}
+  - component: {fileID: 1259590579}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1924,6 +1957,18 @@ MonoBehaviour:
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
+--- !u!114 &1259590579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259590571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e552cd832eb9654984602de1e9cea59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1330081428
 GameObject:
   m_ObjectHideFlags: 0
