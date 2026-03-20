@@ -7,8 +7,9 @@ public class UserInput : MonoBehaviour
 {
     [Header("Inscribed")]
     public TMP_InputField playerInput;
-    public void GetUserInput(string hymn)
+    public void GetUserInput()
     {
+        string hymn = playerInput.text;
         Debug.Log(hymn);
         ulong playerID = NetworkManager.Singleton.LocalClientId;// Get the ClientId from Netcode
         GameManager.instance.SubmitHymnServerRpc(playerID, hymn);
