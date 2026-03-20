@@ -7,8 +7,9 @@ public class UserInput : MonoBehaviour
     [Header("Inscribed")]
     public TMP_InputField playerInput;
     public ulong playerID;//NetCode automatillcay makes playerId's ulong
-    public void GetUserInput(string hymn)
+    public void GetUserInput()
     {
+        string hymn = playerInput.text;
         Debug.Log(hymn);
         GameManager.instance.AddHymn(playerID, hymn);
         // clear input field
