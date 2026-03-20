@@ -32,22 +32,22 @@ public class WaitingRoomManager : NetworkBehaviour
         SendPlayerNameServerRpc(LobbyCreation.PlayerName);
     }
 
-    [ServerRpc(RequireOwnership = false)] // Runs on server, any client can call
+    [ServerRpc(RequireOwnership = false)]
     private void SendPlayerNameServerRpc(string playerName, ServerRpcParams serverRpcParams = default)
     {
-        // Get the ClientId of the player who sent this
         ulong clientId = serverRpcParams.Receive.SenderClientId;
 
         // Add player to PlayerManager with their ClientId and name
         PlayerManager.Instance.AddPlayer(clientId, playerName);
 
-        // Add new player to the server's name list (for UI display)
+        // DEBUG: Check if player was actually added
+        Debug.Log($"Added player to PlayerManager. Total players: {PlayerManager.AllPlayers.Count}");
+
         if (!_allPlayerNames.Contains(playerName))
         {
             _allPlayerNames.Add(playerName);
         }
 
-        // Tell all clients to refresh their player list display
         RefreshAllClientsListClientRpc();
     }
 
