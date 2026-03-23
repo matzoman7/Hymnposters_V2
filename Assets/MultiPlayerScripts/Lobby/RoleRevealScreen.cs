@@ -20,12 +20,8 @@ public class RoleRevealScreen : MonoBehaviour
             Debug.Log($"  ClientId {kvp.Key}: Name={kvp.Value.PlayerName}, Role={kvp.Value.Role}");
         }
 
-        // Debug logs to see what's happening
-        Debug.Log($"PlayerManager.Instance is null? {PlayerManager.Instance == null}");
-
         PlayerData localPlayerData = PlayerManager.Instance.GetLocalPlayer();
 
-        Debug.Log($"localPlayerData is null? {localPlayerData == null}");
 
         if (localPlayerData != null)
         {
