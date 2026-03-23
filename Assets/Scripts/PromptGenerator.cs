@@ -41,10 +41,10 @@ public class PromptGenerator : NetworkBehaviour
         base.OnNetworkSpawn();
 
         // Only the server generates the prompt
-        if (IsServer)
+        /*if (IsServer)
         {
             GeneratePromptServerRpc();
-        }
+        }*/
 
         // Update UI whenever the NetworkVariable changes
         currentPromptIndex.OnValueChanged += OnPromptChanged;
