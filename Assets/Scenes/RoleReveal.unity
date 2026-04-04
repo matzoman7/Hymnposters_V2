@@ -189,6 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c368a8bb6ba2b714f99830e8f79b8e24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   _angelPanel: {fileID: 1725003374}
   _fallenAngelPanel: {fileID: 458019849}
   _displayDuration: 3
