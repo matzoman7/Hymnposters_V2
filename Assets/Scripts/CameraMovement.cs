@@ -8,7 +8,8 @@ public class CameraMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        mainCamera.transform.position = new Vector3(-7.65999985f, 5.78999996f, -13.1099997f);
+        //mainCamera.transform.position = new Vector3(-5.03000021f, 5.15999985f, -13.1599998f);
+        mainCamera.transform.position = new Vector3(-2.70000005f, 5.48000002f, -11.0799999f);
 
     }
 
@@ -18,23 +19,24 @@ public class CameraMovement : MonoBehaviour
         
     }
 
-    private void PlayerOneCameraPosition()
+
+    public void PlayerZeroCameraPosition()
     {
-        mainCamera.transform.position = new Vector3(-2.74000001f, 5.78999996f, -11.1099997f);
+        mainCamera.transform.position = new Vector3(-2.70000005f, 5.48000002f, -11.0799999f);
     }
 
-    private void PlayerTwoCameraPosition()
+    public void PlayerOneCameraPosition()
     {
-        mainCamera.transform.position = new Vector3(-2.74000001f, 5.78999996f, -12.54f);
+        mainCamera.transform.position = new Vector3(-2.70000005f, 5.48000002f, -12.5799999f);
     }
 
-    private void PlayerThreeCameraPosition()
+    public void PlayerTwoCameraPosition()
     {
-        mainCamera.transform.position = new Vector3(-2.74000001f, 5.78999996f, -14.0699997f);
+        mainCamera.transform.position = new Vector3(-2.70000005f, 5.48000002f, -14.1000004f);
     }
 
-    private void PlayerFourCameraPosition()
+    public void PlayerThreeCameraPosition()
     {
-        mainCamera.transform.position = new Vector3(-2.74000001f, 5.78999996f, -15.5f);
+        mainCamera.transform.position = new Vector3(-2.70000005f, 5.48000002f, -15.5200005f);
     }
 }

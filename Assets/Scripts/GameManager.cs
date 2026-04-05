@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to use networking features
 {
-    public static GameManager instance; 
+    public static GameManager instance;
 
+
+    public CameraMovement cameraScript;
     // Dictionary that stores hymns for each player
     // Key: ClientId (0, 1, 2, 3...)
     // Value: List of hymns that player has submitted
@@ -71,6 +73,7 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     [ServerRpc(RequireOwnership = false)]
     public void EndTurnServerRpc()
     {
+
         if (!IsServer) return; // Safety check - only server should execute this logic
 
         // Get all connected players
@@ -82,6 +85,27 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         // Move to next player (% makes it loop back to 0 when it reaches the end)
         int nextIndex = (currentIndex + 1) % allPlayers.Count;
         currentTurnClientId.Value = allPlayers[nextIndex]; // Setting this NetworkVariable syncs to all clients automatically
+
+        if (nextIndex == 0)
+        {
+            cameraScript.PlayerZeroCameraPosition();
+
+        }
+        else if (nextIndex == 1)
+        {
+            cameraScript.PlayerOneCameraPosition();
+
+        }
+        else if (nextIndex == 2)
+        {
+            cameraScript.PlayerTwoCameraPosition();
+
+        }
+        else if (nextIndex == 3)
+        {
+            cameraScript.PlayerThreeCameraPosition();
+
+        }
 
         Debug.Log($"Turn ended. Next turn: ClientId {currentTurnClientId.Value}");
     }
