@@ -1,37 +1,52 @@
 using UnityEngine;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Collections;
 
-public class RoleRevealScreen : MonoBehaviour
+public class RoleRevealScreen : NetworkBehaviour
 {
     [SerializeField] private GameObject _angelPanel;
     [SerializeField] private GameObject _fallenAngelPanel;
-    [SerializeField] private float _displayDuration = 3f;
+    [SerializeField] private float _displayDuration = 5f;
 
-    private void Start()
+    private void Awake()
     {
-        Debug.Log($"RoleRevealScreen: PlayerManager.AllPlayers.Count = {PlayerManager.AllPlayers.Count}");
+        _angelPanel.SetActive(false);
+        _fallenAngelPanel.SetActive(false);
+    }
 
-        foreach (var kvp in PlayerManager.AllPlayers)
+    public override void OnNetworkSpawn()
+    {
+        // Every client asks the server: "Who am I?"
+        RequestRoleServerRpc(NetworkManager.Singleton.LocalClientId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestRoleServerRpc(ulong clientId)
+    {
+        // 1. The Server ensures roles are actually assigned
+        AssignRolesIfMissing();
+
+        // 2. The Server finds the role for this specific client
+        string assignedRole = "Angel"; // Default
+        if (PlayerManager.AllPlayers.TryGetValue(clientId, out PlayerData data))
         {
-            Debug.Log($"  ClientId {kvp.Key}: Name={kvp.Value.PlayerName}, Role={kvp.Value.Role}");
+            assignedRole = data.Role;
         }
 
-        PlayerData localPlayerData = PlayerManager.Instance.GetLocalPlayer();
-
-
-        if (localPlayerData != null)
+        // 3. The Server tells only that client what their role is
+        ClientRpcParams clientRpcParams = new ClientRpcParams
         {
-            Debug.Log($"localPlayerData.ClientId: {localPlayerData.ClientId}");
-            Debug.Log($"localPlayerData.Role: {localPlayerData.Role}");
-        }
+            Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } }
+        };
 
-        string role = (localPlayerData != null) ? localPlayerData.Role : "Angel";
+        ReturnRoleClientRpc(assignedRole, clientRpcParams);
+    }
 
-        Debug.Log($"Final role being used: {role}");
+    [ClientRpc]
+    private void ReturnRoleClientRpc(string role, ClientRpcParams clientRpcParams = default)
+    {
+        Debug.Log($"Role received from server: {role}");
 
         if (role == "Fallen Angel")
         {
@@ -44,14 +59,31 @@ public class RoleRevealScreen : MonoBehaviour
             _fallenAngelPanel.SetActive(false);
         }
 
-        StartCoroutine(WaitThenLoadGame());
+        StartCoroutine(WaitThenLoad());
     }
 
-    private IEnumerator WaitThenLoadGame()
+    private void AssignRolesIfMissing()
+    {
+        bool roleExists = false;
+        foreach (var p in PlayerManager.AllPlayers.Values)
+        {
+            if (p.Role == "Fallen Angel") { roleExists = true; break; }
+        }
+
+        if (!roleExists && PlayerManager.AllPlayers.Count > 0)
+        {
+            var keys = new System.Collections.Generic.List<ulong>(PlayerManager.AllPlayers.Keys);
+            ulong winner = keys[Random.Range(0, keys.Count)];
+            PlayerManager.AllPlayers[winner].Role = "Fallen Angel";
+        }
+    }
+
+    private IEnumerator WaitThenLoad()
     {
         yield return new WaitForSeconds(_displayDuration);
 
-        if (NetworkManager.Singleton.IsServer)
+        // Only the server handles the actual scene transition
+        if (IsServer)
         {
             NetworkManager.Singleton.SceneManager.LoadScene("AlexTest", LoadSceneMode.Single);
         }
