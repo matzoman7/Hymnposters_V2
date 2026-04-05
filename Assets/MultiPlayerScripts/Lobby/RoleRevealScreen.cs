@@ -24,17 +24,14 @@ public class RoleRevealScreen : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void RequestRoleServerRpc(ulong clientId)
     {
-        // 1. The Server ensures roles are actually assigned
         AssignRolesIfMissing();
 
-        // 2. The Server finds the role for this specific client
-        string assignedRole = "Angel"; // Default
+        string assignedRole = "Angel";
         if (PlayerManager.AllPlayers.TryGetValue(clientId, out PlayerData data))
         {
             assignedRole = data.Role;
         }
 
-        // 3. The Server tells only that client what their role is
         ClientRpcParams clientRpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } }
@@ -46,8 +43,25 @@ public class RoleRevealScreen : NetworkBehaviour
     [ClientRpc]
     private void ReturnRoleClientRpc(string role, ClientRpcParams clientRpcParams = default)
     {
-        Debug.Log($"Role received from server: {role}");
+        ulong myId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log($"[CLIENT {myId}] Received Role: {role}");
 
+        // --- CRITICAL FIX: Update the PlayerManager so the PromptGenerator can see it later ---
+        if (PlayerManager.Instance != null)
+        {
+            PlayerData myData = PlayerManager.Instance.GetPlayer(myId);
+            if (myData == null)
+            {
+                // If the dictionary was empty on the client, create the entry now
+                PlayerManager.Instance.AddPlayer(myId, "LocalPlayer", role);
+            }
+            else
+            {
+                myData.Role = role;
+            }
+        }
+
+        // Show the correct UI
         if (role == "Fallen Angel")
         {
             _fallenAngelPanel.SetActive(true);
@@ -64,6 +78,7 @@ public class RoleRevealScreen : NetworkBehaviour
 
     private void AssignRolesIfMissing()
     {
+        // Only the Server checks this
         bool roleExists = false;
         foreach (var p in PlayerManager.AllPlayers.Values)
         {
@@ -75,6 +90,7 @@ public class RoleRevealScreen : NetworkBehaviour
             var keys = new System.Collections.Generic.List<ulong>(PlayerManager.AllPlayers.Keys);
             ulong winner = keys[Random.Range(0, keys.Count)];
             PlayerManager.AllPlayers[winner].Role = "Fallen Angel";
+            Debug.Log($"Assigned Fallen Angel to Client ID: {winner}");
         }
     }
 
@@ -82,7 +98,7 @@ public class RoleRevealScreen : NetworkBehaviour
     {
         yield return new WaitForSeconds(_displayDuration);
 
-        // Only the server handles the actual scene transition
+        // Only the server initiates the scene change for everyone
         if (IsServer)
         {
             NetworkManager.Singleton.SceneManager.LoadScene("AlexTest", LoadSceneMode.Single);
