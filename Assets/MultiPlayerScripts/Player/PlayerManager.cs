@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance { get; private set; } // Singleton so any script can access PlayerManager.Instance
 
@@ -22,7 +22,13 @@ public class PlayerManager : MonoBehaviour
             Destroy(gameObject); // Destroy duplicates
         }
     }
-
+    
+    // This runs when the object is officially ready on the network
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        Debug.Log("PlayerManager Network Spawned!");
+    }
     // Add a new player to the dictionary when they join
     public void AddPlayer(ulong clientId, string playerName, string role = "Angel")
     {
@@ -60,5 +66,32 @@ public class PlayerManager : MonoBehaviour
     public void ClearAllPlayers()
     {
         AllPlayers.Clear();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestSyncServerRpc(ulong requesterId)
+    {
+        Debug.Log($"[SERVER] Syncing {AllPlayers.Count} players to Client {requesterId}");
+        foreach (var player in AllPlayers.Values)
+        {
+            TargetSyncClientRpc(player.ClientId, player.PlayerName, player.Role, player.IsAlive,
+                new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { requesterId } } });
+        }
+    }
+
+    [ClientRpc]
+    private void TargetSyncClientRpc(ulong id, string name, string role, bool alive, ClientRpcParams clientRpcParams = default)
+    {
+        if (!AllPlayers.ContainsKey(id))
+        {
+            AllPlayers[id] = new PlayerData(id, name, role);
+        }
+        else
+        {
+            AllPlayers[id].PlayerName = name;
+            AllPlayers[id].Role = role;
+        }
+        AllPlayers[id].IsAlive = alive;
+        Debug.Log($"[CLIENT] Received Sync for: {name}");
     }
 }

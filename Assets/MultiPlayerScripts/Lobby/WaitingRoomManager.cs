@@ -12,6 +12,11 @@ public class WaitingRoomManager : NetworkBehaviour
 
     private void Start()
     {
+        if (IsServer)
+        {
+            // The host needs to add themselves too!
+            PlayerManager.Instance.AddPlayer(NetworkManager.Singleton.LocalClientId, LobbyCreation.PlayerName);
+        }
         // Only show Start Game button to the host
         if (_startGameButton != null)
         {

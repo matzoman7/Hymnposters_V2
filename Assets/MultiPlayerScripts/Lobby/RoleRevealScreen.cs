@@ -46,7 +46,6 @@ public class RoleRevealScreen : NetworkBehaviour
         ulong myId = NetworkManager.Singleton.LocalClientId;
         Debug.Log($"[CLIENT {myId}] Received Role: {role}");
 
-        // --- CRITICAL FIX: Update the PlayerManager so the PromptGenerator can see it later ---
         if (PlayerManager.Instance != null)
         {
             PlayerData myData = PlayerManager.Instance.GetPlayer(myId);
