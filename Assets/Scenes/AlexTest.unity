@@ -4705,7 +4705,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   cameraScript: {fileID: 2127941293}
   currentPrompt: 
-  maxHymnsPerRound: 0
+  maxHymnsPerRound: 12
   totalVotes: 0
 --- !u!4 &2146193299
 Transform:
