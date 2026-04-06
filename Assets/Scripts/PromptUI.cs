@@ -25,4 +25,20 @@ public class PromptUI : MonoBehaviour
             displayed = true;
         }
     }
+
+    public void DisableUI()
+    {
+        this.gameObject.SetActive(false);
+
+    }
+
+    public void OnEnable()
+    {
+        GameManager.onHymnRoundEnd += DisableUI;
+    }
+
+    public void OnDisable()
+    {
+        GameManager.onHymnRoundEnd -= DisableUI;
+    }
 }

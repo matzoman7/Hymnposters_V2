@@ -1,6 +1,8 @@
 using Unity.Netcode;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using System;
 
 public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to use networking features
 {
@@ -15,7 +17,23 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     public string currentPrompt;
     // NetworkVariable automatically syncs across all clients - everyone sees the same value
     // This tracks whose turn it currently is by their ClientId
+
+    public int maxHymnsPerRound;
+    public static event Action onHymnRoundEnd;
+    public static event Action onVotingRoundStart;
+    public static event Action onVotingRoundEnd;
+
+    [Header("VotingStuff")]
+    public int totalVotes;
+    public int player1Votes;
+    public int player2Votes;
+    public int player3Votes;
+    public int player4Votes;
+    
+
+    private int hymnsCount;
     private NetworkVariable<ulong> currentTurnClientId = new NetworkVariable<ulong>(0); // Starts at 0 (host goes first)
+    
 
     void Awake()
     {
@@ -66,6 +84,63 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         // Add the hymn to their list
         playerHymns[clientId].Add(hymn);
         Debug.Log($"[SERVER] Player {clientId} submitted hymn: {hymn}");
+        hymnsCount++;
+        if (hymnsCount == maxHymnsPerRound)
+        {
+            //trigger event that round for adding hymns is over
+            HymnRoundEndClientRpc();
+            VotingRoundStartClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    private void HymnRoundEndClientRpc()
+    {
+        onHymnRoundEnd?.Invoke();
+    }
+
+    [ClientRpc]
+    private void VotingRoundStartClientRpc()
+    {
+        onVotingRoundStart?.Invoke();
+    }
+
+    [ClientRpc]
+    private void VotingRoundEndClientRpc()
+    {
+        onVotingRoundEnd?.Invoke();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SubmitVoteServerRpc(ulong clientId, int playerVoted)
+    {
+        switch (playerVoted) 
+        {
+            case 1:
+                player1Votes++;
+                totalVotes++;
+                break;
+            case 2:
+                player2Votes++;
+                totalVotes++; 
+                break;
+            case 3:
+                player3Votes++;
+                totalVotes++; 
+                break;
+            case 4:
+                player4Votes++;
+                totalVotes++; 
+                break;
+        }
+
+        if(totalVotes == 4)
+        {
+            //End round and see if player with the most votes is the imposter 
+            VotingRoundEndClientRpc();
+
+
+        }
     }
 
     // End the current turn and move to the next player
