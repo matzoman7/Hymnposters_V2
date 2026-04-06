@@ -28,7 +28,7 @@ public class UserInput : MonoBehaviour
                 if (currentText != lastInputText)
                 {
                     // Text changed, send typing status to server
-                    //GameManager.instance.UpdateTypingStatusServerRpc(NetworkManager.Singleton.LocalClientId, isTyping);
+                    GameManager.instance.UpdateTypingStatusServerRpc(NetworkManager.Singleton.LocalClientId, isTyping);
                     lastInputText = currentText;
                 }
             }

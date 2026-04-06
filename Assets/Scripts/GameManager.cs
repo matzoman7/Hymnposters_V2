@@ -42,7 +42,7 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         if (IsClient)
         {
             Debug.Log($"[CLIENT {NetworkManager.Singleton.LocalClientId}] GameManager spawned. Starting sync check...");
-            //StartCoroutine(WaitAndSync());
+            StartCoroutine(WaitAndSync());
         }
     }
 
