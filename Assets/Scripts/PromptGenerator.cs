@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
@@ -7,6 +8,7 @@ using UnityEngine;
 public class PromptGenerator : NetworkBehaviour
 {
     [SerializeField] private List<string> prompts = new List<string>();
+    [SerializeField] private List<string> fallenAngelPrompts = new List<string>();
     public string currentPrompt;
     public TextMeshProUGUI promptUI;
     
@@ -55,9 +57,49 @@ public class PromptGenerator : NetworkBehaviour
             OnPromptChanged(-1, currentPromptIndex.Value);
         }
     }
-
     private void OnPromptChanged(int oldValue, int newValue)
     {
-        promptUI.text = prompts[newValue];
+        // Instead of calling it directly, start the "Wait and Display" process
+        StopAllCoroutines();
+        StartCoroutine(WaitAndDisplayPrompt());
+    }
+    private IEnumerator WaitAndDisplayPrompt()
+    {
+        ulong localId = NetworkManager.Singleton.LocalClientId;
+
+        // Safety check: Wait until the PlayerManager Instance is actually ready in this scene
+        while (PlayerManager.Instance == null)
+        {
+            yield return null; // Wait one frame
+        }
+
+        // Now call the display logic
+        ActualDisplayLogic();
+    }
+
+    private void ActualDisplayLogic()
+    {
+        int index = currentPromptIndex.Value;
+        if (index == -1) return;
+
+        ulong localId = NetworkManager.Singleton.LocalClientId;
+        PlayerData localPlayer = PlayerManager.Instance?.GetPlayer(localId);
+
+        if (localPlayer != null)
+        {
+            Debug.Log($"[CLIENT {localId}] Role: <color=yellow>{localPlayer.Role}</color>");
+
+            if (localPlayer.Role == "Fallen Angel")
+            {
+                promptUI.text = (index < fallenAngelPrompts.Count) ? fallenAngelPrompts[index] : "Blend in";
+            }
+            else
+            {
+                if (index < prompts.Count)
+                {
+                    promptUI.text = prompts[index];
+                }
+            }
+        }
     }
 }

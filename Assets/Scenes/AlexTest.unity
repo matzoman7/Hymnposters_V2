@@ -1493,6 +1493,12 @@ MonoBehaviour:
   - Prompt 3
   - Prompt 4
   - Prompt 5
+  fallenAngelPrompts:
+  - FA Prompt 1
+  - FA Prompt 2
+  - FA Prompt 3
+  - FA Prompt 4
+  - FA Prompt 5
   currentPrompt: 
   promptUI: {fileID: 975889706}
 --- !u!114 &2146193301
