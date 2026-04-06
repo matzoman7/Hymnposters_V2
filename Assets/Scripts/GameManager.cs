@@ -1,8 +1,9 @@
-using Unity.Netcode;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using System;
 using UnityEngine.Rendering;
 
 public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to use networking features
@@ -32,7 +33,18 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 
     private int hymnsCount;
     private NetworkVariable<ulong> currentTurnClientId = new NetworkVariable<ulong>(0); // Starts at 0 (host goes first)
-    
+
+    // Track who is currently typing
+    private NetworkVariable<bool> isCurrentPlayerTyping = new NetworkVariable<bool>(false);
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsClient)
+        {
+            Debug.Log($"[CLIENT {NetworkManager.Singleton.LocalClientId}] GameManager spawned. Starting sync check...");
+            //StartCoroutine(WaitAndSync());
+        }
+    }
 
     void Awake()
     {
@@ -236,6 +248,49 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 
         Debug.Log($"Turn ended. Next turn: ClientId {currentTurnClientId.Value}");
     }
+    [ServerRpc(RequireOwnership = false)]
+    public void UpdateTypingStatusServerRpc(ulong clientId, bool isTyping)
+    {
+        // Only update if it's the current turn player
+        if (clientId == currentTurnClientId.Value)
+        {
+            isCurrentPlayerTyping.Value = isTyping;
+        }
+    }
+
+    // Get if the current player is typing
+    public bool IsCurrentPlayerTyping()
+    {
+        return isCurrentPlayerTyping.Value;
+    }
+
+    // Get the name of the current turn player
+    public string GetCurrentPlayerName()
+    {
+        ulong currentId = currentTurnClientId.Value;
+
+        PlayerData player = PlayerManager.Instance?.GetPlayer(currentId);
+
+        if (player != null && !string.IsNullOrEmpty(player.PlayerName))
+        {
+            return player.PlayerName;
+        }
+
+        return "Player " + currentId;
+    }
+    private IEnumerator WaitAndSync()
+    {
+        // Wait until PlayerManager exists and is spawned on the network
+        while (PlayerManager.Instance == null || !PlayerManager.Instance.IsSpawned)
+        {
+            Debug.Log("Waiting for PlayerManager to spawn...");
+            yield return null; // Wait for the next frame
+        }
+
+        Debug.Log("PlayerManager is ready! Requesting sync...");
+        PlayerManager.Instance.RequestSyncServerRpc(NetworkManager.Singleton.LocalClientId);
+    }
+
     // Debug method to print all hymns in the dictionary (hook this to a button)
     public void PrintAllHymns()
     {
