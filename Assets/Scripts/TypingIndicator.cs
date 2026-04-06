@@ -11,18 +11,19 @@ public class TypingIndicator : MonoBehaviour
         {
             // Only show typing indicator if it's not your turn
             bool isMyTurn = GameManager.instance.IsMyTurn();
-            bool someoneIsTyping = GameManager.instance.IsCurrentPlayerTyping();
+            //bool someoneIsTyping = GameManager.instance.IsCurrentPlayerTyping();
 
-            if (!isMyTurn && someoneIsTyping)
+            //if (!isMyTurn && someoneIsTyping)
             {
-                string playerName = GameManager.instance.GetCurrentPlayerName();
-                typingText.text = $"{playerName} is typing...";
-                typingText.gameObject.SetActive(true);
+                //string playerName = GameManager.instance.GetCurrentPlayerName();
+                //typingText.text = $"{playerName} is typing...";
+                //typingText.gameObject.SetActive(true);
+                //}
+                //else
+                //{
+                //typingText.gameObject.SetActive(false);
+                //}         
             }
-            else
-            {
-                typingText.gameObject.SetActive(false);
-            }         
         }
     }
 }

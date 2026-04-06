@@ -25,7 +25,7 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         if (IsClient)
         {
             Debug.Log($"[CLIENT {NetworkManager.Singleton.LocalClientId}] GameManager spawned. Starting sync check...");
-            StartCoroutine(WaitAndSync());
+            //StartCoroutine(WaitAndSync());
         }
     }
 
@@ -121,50 +121,6 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 
         Debug.Log($"Turn ended. Next turn: ClientId {currentTurnClientId.Value}");
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void UpdateTypingStatusServerRpc(ulong clientId, bool isTyping)
-    {
-        // Only update if it's the current turn player
-        if (clientId == currentTurnClientId.Value)
-        {
-            isCurrentPlayerTyping.Value = isTyping;
-        }
-    }
-
-    // Get if the current player is typing
-    public bool IsCurrentPlayerTyping()
-    {
-        return isCurrentPlayerTyping.Value;
-    }
-
-    // Get the name of the current turn player
-    public string GetCurrentPlayerName()
-    {
-        ulong currentId = currentTurnClientId.Value;
-
-        PlayerData player = PlayerManager.Instance?.GetPlayer(currentId);
-
-        if (player != null && !string.IsNullOrEmpty(player.PlayerName))
-        {
-            return player.PlayerName;
-        }
-
-        return "Player " + currentId;
-    }
-    private IEnumerator WaitAndSync()
-    {
-        // Wait until PlayerManager exists and is spawned on the network
-        while (PlayerManager.Instance == null || !PlayerManager.Instance.IsSpawned)
-        {
-            Debug.Log("Waiting for PlayerManager to spawn...");
-            yield return null; // Wait for the next frame
-        }
-
-        Debug.Log("PlayerManager is ready! Requesting sync...");
-        PlayerManager.Instance.RequestSyncServerRpc(NetworkManager.Singleton.LocalClientId);
-    }
-
     // Debug method to print all hymns in the dictionary (hook this to a button)
     public void PrintAllHymns()
     {
