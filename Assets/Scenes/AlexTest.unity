@@ -681,7 +681,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &394712014
 RectTransform:
   m_ObjectHideFlags: 0
@@ -787,6 +787,11 @@ MonoBehaviour:
   - {fileID: 1787135723}
   - {fileID: 1532988203}
   - {fileID: 1848518640}
+  votingButtons:
+  - {fileID: 1011969653}
+  - {fileID: 1787135726}
+  - {fileID: 1532988206}
+  - {fileID: 1848518643}
   hasVoted: 0
 --- !u!1 &468756708
 GameObject:
@@ -2298,13 +2303,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1011969653}
+        m_TargetAssemblyTypeName: VotingButton, Assembly-CSharp
+        m_MethodName: VoteButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2360,7 +2365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06aa49abab83464ebd2c387dec448ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonID: 1
+  targetClientId: 0
   voteManager: {fileID: 394712017}
 --- !u!1 &1050637990
 GameObject:
@@ -3450,7 +3455,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1532988204}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1532988206}
+        m_TargetAssemblyTypeName: VotingButton, Assembly-CSharp
+        m_MethodName: VoteButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1532988204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3501,7 +3518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06aa49abab83464ebd2c387dec448ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonID: 3
+  targetClientId: 0
   voteManager: {fileID: 394712017}
 --- !u!1 &1582551257
 GameObject:
@@ -3990,7 +4007,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1787135724}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1787135726}
+        m_TargetAssemblyTypeName: VotingButton, Assembly-CSharp
+        m_MethodName: VoteButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1787135724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4041,7 +4070,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06aa49abab83464ebd2c387dec448ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonID: 2
+  targetClientId: 0
   voteManager: {fileID: 394712017}
 --- !u!1 &1848518638
 GameObject:
@@ -4126,7 +4155,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1848518641}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1848518643}
+        m_TargetAssemblyTypeName: VotingButton, Assembly-CSharp
+        m_MethodName: VoteButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1848518641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4177,7 +4218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c06aa49abab83464ebd2c387dec448ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonID: 4
+  targetClientId: 0
   voteManager: {fileID: 394712017}
 --- !u!1 &1972100833
 GameObject:
@@ -4529,10 +4570,6 @@ MonoBehaviour:
   currentPrompt: 
   maxHymnsPerRound: 0
   totalVotes: 0
-  player1Votes: 0
-  player2Votes: 0
-  player3Votes: 0
-  player4Votes: 0
 --- !u!4 &2146193299
 Transform:
   m_ObjectHideFlags: 0
@@ -4562,11 +4599,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   prompts:
-  - Prompt 1
-  - Prompt 2
-  - Prompt 3
-  - Prompt 4
-  - Prompt 5
+  - Dog
+  - Rock Music
+  - Cheese Burgers
+  - School
+  - Soda
   fallenAngelPrompts:
   - FA Prompt 1
   - FA Prompt 2
@@ -4608,6 +4645,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2495869482809586910, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
+      propertyPath: m_text
+      value: Prompt
+      objectReference: {fileID: 0}
     - target: {fileID: 3457314724497202535, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -4702,7 +4743,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5352906306386513344, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5524701687171121920, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_LineType
@@ -4746,7 +4787,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5700665615572304568, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6487598252970176482, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_TextWrappingMode
