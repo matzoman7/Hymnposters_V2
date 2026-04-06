@@ -96,8 +96,10 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         playerHymns[clientId].Add(hymn);
         Debug.Log($"[SERVER] Player {clientId} submitted hymn: {hymn}");
         hymnsCount++;
+        Debug.Log(hymnsCount);
         if (hymnsCount == maxHymnsPerRound)
         {
+            
             //trigger event that round for adding hymns is over
             HymnRoundEndClientRpc();
             VotingRoundStartClientRpc();
