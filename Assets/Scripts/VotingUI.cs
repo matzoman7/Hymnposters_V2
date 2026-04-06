@@ -66,7 +66,7 @@ public class VotingUI : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         hasVoted = false;
-
+        Debug.Log("Voting Round Start");
         foreach (Button button in buttonList)
         {
             button.interactable = true;
