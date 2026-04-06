@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using UnityEngine.Rendering;
 
 public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to use networking features
 {
@@ -25,11 +26,9 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 
     [Header("VotingStuff")]
     public int totalVotes;
-    public int player1Votes;
-    public int player2Votes;
-    public int player3Votes;
-    public int player4Votes;
-    
+    private Dictionary<ulong, int> votesByPlayer = new Dictionary<ulong, int>();
+    private HashSet<ulong> playersWhoAlreadyVoted = new HashSet<ulong>();
+
 
     private int hymnsCount;
     private NetworkVariable<ulong> currentTurnClientId = new NetworkVariable<ulong>(0); // Starts at 0 (host goes first)
@@ -112,36 +111,89 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SubmitVoteServerRpc(ulong clientId, int playerVoted)
+    public void SubmitVoteServerRpc(ulong votedPlayerClientId, ServerRpcParams rpcParams = default)
     {
-        switch (playerVoted) 
+        ulong voterClientId = rpcParams.Receive.SenderClientId;
+
+        // Prevent double voting
+        if (playersWhoAlreadyVoted.Contains(voterClientId))
         {
-            case 1:
-                player1Votes++;
-                totalVotes++;
-                break;
-            case 2:
-                player2Votes++;
-                totalVotes++; 
-                break;
-            case 3:
-                player3Votes++;
-                totalVotes++; 
-                break;
-            case 4:
-                player4Votes++;
-                totalVotes++; 
-                break;
+            Debug.Log($"Player {voterClientId} already voted.");
+            return;
         }
 
-        if(totalVotes == 4)
+        playersWhoAlreadyVoted.Add(voterClientId);
+
+        // Add vote
+        if (!votesByPlayer.ContainsKey(votedPlayerClientId)) 
         {
-            //End round and see if player with the most votes is the imposter 
-            VotingRoundEndClientRpc();
+            votesByPlayer[votedPlayerClientId] = 0;
+        }
+            
 
+        votesByPlayer[votedPlayerClientId]++;
+        totalVotes++;
 
+        Debug.Log($"Player {voterClientId} voted for player {votedPlayerClientId}");
+
+        // If everyone has voted
+        if (totalVotes >= NetworkManager.Singleton.ConnectedClientsIds.Count)
+        {
+            ResolveVotingRound();
         }
     }
+
+    private void ResolveVotingRound()
+    {
+        VotingRoundEndClientRpc();
+
+        ulong votedOutClientId = ulong.MaxValue;
+        int mostVotes = -1;
+
+        foreach (var entry in votesByPlayer)
+        {
+            ulong clientId = entry.Key;
+            int votes = entry.Value;
+
+            Debug.Log($"Player {clientId} received {votes} votes.");
+
+            if (votes > mostVotes)
+            {
+                mostVotes = votes;
+                votedOutClientId = clientId;
+            }
+        }
+
+        if (votedOutClientId == ulong.MaxValue)
+        {
+            Debug.Log("No valid voted out player found.");
+            return;
+        }
+
+        PlayerData votedOutPlayer = PlayerManager.Instance?.GetPlayer(votedOutClientId);
+
+        if (votedOutPlayer != null)
+        {
+            Debug.Log($"Player voted out: {votedOutPlayer.PlayerName} ({votedOutClientId})");
+            Debug.Log($"Their role was: {votedOutPlayer.Role}");
+
+            if (votedOutPlayer.Role == "Fallen Angel")
+            {
+                Debug.Log("The impostor was caught!");
+                // TODO: Trigger Innocents Win
+            }
+            else
+            {
+                Debug.Log("Wrong vote! The impostor survives.");
+                // TODO: Trigger Fallen Angel Win or continue round
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Could not find PlayerData for ClientId {votedOutClientId}");
+        }
+    }
+
 
     // End the current turn and move to the next player
     // [ServerRpc] means this runs on the server, but any client can call it
