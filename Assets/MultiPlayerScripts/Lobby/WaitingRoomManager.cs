@@ -12,6 +12,11 @@ public class WaitingRoomManager : NetworkBehaviour
 
     private void Start()
     {
+        if (IsServer)
+        {
+            // The host needs to add themselves too!
+            PlayerManager.Instance.AddPlayer(NetworkManager.Singleton.LocalClientId, LobbyCreation.PlayerName);
+        }
         // Only show Start Game button to the host
         if (_startGameButton != null)
         {
@@ -25,6 +30,7 @@ public class WaitingRoomManager : NetworkBehaviour
             Invoke(nameof(SendPlayerName), 0.5f); // Small delay to ensure everything is ready
         }
     }
+
 
     private void SendPlayerName()
     {
