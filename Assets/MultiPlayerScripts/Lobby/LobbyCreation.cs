@@ -8,7 +8,7 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Netcode.Transports.UTP;
 using TMPro;
-using System.Threading.Tasks; // For async/await
+using System.Threading.Tasks;
 
 public class LobbyCreation : MonoBehaviour
 {
@@ -16,100 +16,153 @@ public class LobbyCreation : MonoBehaviour
     [SerializeField] private TMP_InputField _nameInputField;
     [SerializeField] private TMP_InputField _lobbyNameInputField;
 
-    public static string PlayerName { get; private set; } = "Player"; // Stores player's name
+    public static string PlayerName { get; private set; } = "Player";
     private Lobby _currentLobby;
+    private float _heartbeatTimer;
+    private const float HeartbeatInterval = 15f; // Ping every 15s, lobby times out at 30s
 
-    private async void Start() // async allows 'await' for Unity Services
+    private async void Start()
     {
-        await UnityServices.InitializeAsync(); // Connect to Unity's cloud services
-        await AuthenticationService.Instance.SignInAnonymouslyAsync(); // Sign in anonymously
+        await UnityServices.InitializeAsync();
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+    }
+
+    // FIX: Send heartbeat to keep lobby alive
+    private void Update()
+    {
+        if (_currentLobby == null) return;
+
+        _heartbeatTimer -= Time.deltaTime;
+        if (_heartbeatTimer <= 0)
+        {
+            _heartbeatTimer = HeartbeatInterval;
+            SendHeartbeat();
+        }
+    }
+
+    private async void SendHeartbeat()
+    {
+        try
+        {
+            await LobbyService.Instance.SendHeartbeatPingAsync(_currentLobby.Id);
+            Debug.Log("Lobby heartbeat sent");
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogWarning($"Heartbeat failed: {e.Message}");
+        }
     }
 
     private void SavePlayerName()
     {
-        string inputName = _nameInputField.text.Trim(); // Get typed name, remove spaces
+        string inputName = _nameInputField.text.Trim();
 
+        if (string.IsNullOrEmpty(inputName))
+        {
+            int counter = PlayerPrefs.GetInt("PlayerCounter", 0);
+            PlayerName = $"Player_{counter}";
+            PlayerPrefs.SetInt("PlayerCounter", counter + 1);
+            PlayerPrefs.Save();
+        }
+        else
+        {
+            PlayerName = inputName;
+        }
 
-        PlayerName = string.IsNullOrEmpty(inputName) ? "Player" : inputName; //THIS DOESNT WORK idk why ill figure it out later.
+        Debug.Log($"Player name set to: {PlayerName}");
     }
 
-    public async void OnHostClicked() // waits for Relay/Lobby setup
+    public async void OnHostClicked()
     {
-        if (_networkManager.IsServer || _networkManager.IsClient) return; // Prevent multiple sessions
+        if (_networkManager.IsServer || _networkManager.IsClient) return;
         SavePlayerName();
 
-        string lobbyName = _lobbyNameInputField.text.Trim(); // Get the lobby name
-        if (string.IsNullOrEmpty(lobbyName)) lobbyName = $"{PlayerName}'s Lobby"; // Default lobby name
+        string lobbyName = _lobbyNameInputField.text.Trim();
+        if (string.IsNullOrEmpty(lobbyName)) lobbyName = $"{PlayerName}'s Lobby";
 
-        await StartHost(lobbyName); // Create the lobby and start hosting
+        await StartHost(lobbyName);
     }
 
     private async Task StartHost(string lobbyName)
     {
         try
         {
-            //Create a Relay allocation
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4); // Max 4 players
-            string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId); // Get a join code like "ABCD-1234"
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(4);
+            string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-            //Unity Transport uses Relay instead of direct IP
             var transport = _networkManager.GetComponent<UnityTransport>();
             transport.SetHostRelayData(
-                allocation.RelayServer.IpV4, // Relay server IP
-                (ushort)allocation.RelayServer.Port, // Relay server port
-                allocation.AllocationIdBytes, // Your unique room ID
-                allocation.Key, // Security key
-                allocation.ConnectionData // Connection info
+                allocation.RelayServer.IpV4,
+                (ushort)allocation.RelayServer.Port,
+                allocation.AllocationIdBytes,
+                allocation.Key,
+                allocation.ConnectionData
             );
 
-            //Creates a lobby that shows up in the lobby list
             CreateLobbyOptions options = new CreateLobbyOptions
             {
-                IsPrivate = false, // Public lobby, anyone can see it
+                IsPrivate = false,
                 Data = new System.Collections.Generic.Dictionary<string, DataObject>
-                {
-                    { "JoinCode", new DataObject(DataObject.VisibilityOptions.Public, joinCode) } // Store join code in lobby data so clients can connect via Relay
-                }
+            {
+                { "JoinCode", new DataObject(DataObject.VisibilityOptions.Public, joinCode) },
+                { "HostName", new DataObject(DataObject.VisibilityOptions.Public, PlayerName) }
+            }
             };
 
-            _currentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, 4, options); // Create the lobby with max 4 players
+            _currentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, 4, options);
+            _heartbeatTimer = HeartbeatInterval;
 
-            //Start hosting
-            _networkManager.StartHost(); // Start as host (server + client)
-            _networkManager.SceneManager.LoadScene("LobbyWaitingRoom", UnityEngine.SceneManagement.LoadSceneMode.Single); // Load game scene
+            DontDestroyOnLoad(gameObject);
+
+            _networkManager.StartHost();
+            _networkManager.SceneManager.LoadScene("LobbyWaitingRoom", UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Failed to create lobby: {e.Message}"); // Log any errors
+            Debug.LogError($"Failed to create lobby: {e.Message}");
         }
     }
+
     public async void JoinLobbyByCode(string joinCode)
     {
-        if (_networkManager.IsServer || _networkManager.IsClient) return; // Prevent joining if already connected
+        if (_networkManager.IsServer || _networkManager.IsClient) return;
         SavePlayerName();
 
         try
         {
-            // Join the Relay using the join code
             JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-            //Configure transport to connect via Relay
             var transport = _networkManager.GetComponent<UnityTransport>();
             transport.SetClientRelayData(
-                allocation.RelayServer.IpV4, // Relay server IP
-                (ushort)allocation.RelayServer.Port, // Relay server port
-                allocation.AllocationIdBytes, // Your unique room ID
-                allocation.Key, // Security key
-                allocation.ConnectionData, // Connection data
-                allocation.HostConnectionData // Host's connection data
+                allocation.RelayServer.IpV4,
+                (ushort)allocation.RelayServer.Port,
+                allocation.AllocationIdBytes,
+                allocation.Key,
+                allocation.ConnectionData,
+                allocation.HostConnectionData
             );
 
-            //Start as client
             _networkManager.StartClient();
         }
         catch (System.Exception e)
         {
             Debug.LogError($"Failed to join lobby: {e.Message}");
+        }
+    }
+
+    private async void OnDestroy()
+    {
+        // FIX: Clean up lobby when host leaves so it doesn't linger as a ghost lobby
+        if (_currentLobby != null)
+        {
+            try
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(_currentLobby.Id);
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.LogWarning($"Failed to delete lobby on exit: {e.Message}");
+            }
         }
     }
 }

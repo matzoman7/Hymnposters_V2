@@ -16,15 +16,16 @@ public class LobbyBrowser : MonoBehaviour
 
     private List<Lobby> _availableLobbies = new List<Lobby>();
     private bool _isInitialized = false;
+    private string _joinedLobbyId = null; // Track which lobby we've joined
 
     private async void Start()
     {
-        await InitializeUnityServices(); // Connect to Unity's cloud services
+        await InitializeUnityServices();
 
         if (_isInitialized)
         {
-            await RefreshLobbyList(); // Get initial list of lobbies
-            InvokeRepeating(nameof(RefreshLobbyListRepeating), _refreshInterval, _refreshInterval); // Keep refreshing every 5 seconds
+            await RefreshLobbyList();
+            InvokeRepeating(nameof(RefreshLobbyListRepeating), _refreshInterval, _refreshInterval);
         }
     }
 
@@ -32,12 +33,10 @@ public class LobbyBrowser : MonoBehaviour
     {
         try
         {
-            // Initialize Unity Services if not already done
             if (UnityServices.State == ServicesInitializationState.Uninitialized)
             {
                 await UnityServices.InitializeAsync();
 
-                // Sign in anonymously if not already signed in
                 if (!AuthenticationService.Instance.IsSignedIn)
                 {
                     await AuthenticationService.Instance.SignInAnonymouslyAsync();
@@ -53,39 +52,43 @@ public class LobbyBrowser : MonoBehaviour
 
     private async void RefreshLobbyListRepeating()
     {
-        await RefreshLobbyList(); // Wrapper for InvokeRepeating since it can't call async methods directly
+        if (_joinedLobbyId != null)
+        {
+            await RefreshJoinedLobby();
+        }
+        else
+        {
+            await RefreshLobbyList();
+        }
     }
 
     private async Task RefreshLobbyList()
     {
-        if (!_isInitialized) return; // Don't query if services aren't ready
+        if (!_isInitialized) return;
 
         try
         {
-            // Set up query to find lobbies with open slots
             QueryLobbiesOptions options = new QueryLobbiesOptions
             {
-                Count = 25, // Get up to 25 lobbies
+                Count = 25,
                 Filters = new List<QueryFilter>
                 {
-                    new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT) // Only show lobbies with available slots
+                    new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GE)
                 }
             };
 
-            // Query Unity's lobby service
             QueryResponse response = await LobbyService.Instance.QueryLobbiesAsync(options);
             _availableLobbies = response.Results;
 
-            UpdateLobbyListUI(); // Update the UI with the new list
+            UpdateLobbyListUI();
         }
         catch (LobbyServiceException e)
         {
             if (e.Reason == LobbyExceptionReason.RateLimited)
             {
-                // Too many requests, slow down refresh rate
                 Debug.LogWarning("Rate limited - slowing down refresh");
                 CancelInvoke(nameof(RefreshLobbyListRepeating));
-                InvokeRepeating(nameof(RefreshLobbyListRepeating), 10f, 10f); // Refresh every 10 seconds instead
+                InvokeRepeating(nameof(RefreshLobbyListRepeating), 7f, 7f);
             }
             else
             {
@@ -93,43 +96,79 @@ public class LobbyBrowser : MonoBehaviour
             }
         }
     }
+    private async Task RefreshJoinedLobby()
+    {
+        try
+        {
+            Lobby lobby = await LobbyService.Instance.GetLobbyAsync(_joinedLobbyId);
+
+            // Check if the host has started the game (you set this flag in LobbyCreation)
+            if (lobby.Data.ContainsKey("GameStarted") && lobby.Data["GameStarted"].Value == "true")
+            {
+                Debug.Log("Game started — leaving lobby browser");
+                CancelInvoke(nameof(RefreshLobbyListRepeating));
+                return;
+            }
+
+            // Update just the joined lobby's entry in our list so its player count refreshes
+            for (int i = 0; i < _availableLobbies.Count; i++)
+            {
+                if (_availableLobbies[i].Id == _joinedLobbyId)
+                {
+                    _availableLobbies[i] = lobby;
+                    break;
+                }
+            }
+
+            UpdateLobbyListUI();
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogWarning($"Failed to refresh joined lobby: {e.Message}");
+            _joinedLobbyId = null; // Lobby probably closed, go back to browsing
+        }
+    }
 
     private void UpdateLobbyListUI()
     {
-        // Clear old lobby buttons
         foreach (Transform child in _lobbyListContent)
         {
             Destroy(child.gameObject);
         }
 
-        // Create a button for each available lobby
         foreach (Lobby lobby in _availableLobbies)
         {
             GameObject buttonObj = Instantiate(_lobbyButtonPrefab, _lobbyListContent);
 
-            // Update button text with lobby name and player count
             TextMeshProUGUI buttonText = buttonObj.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
-                int playerCount = lobby.MaxPlayers - lobby.AvailableSlots;
+                int playerCount = lobby.Players.Count;
                 buttonText.text = $"{lobby.Name}\n{playerCount}/{lobby.MaxPlayers} players";
             }
 
-            // Add click listener to join this lobby
             Button button = buttonObj.GetComponent<Button>();
-            string joinCode = lobby.Data["JoinCode"].Value; // Get the Relay join code from lobby data
-            button.onClick.AddListener(() => OnLobbyButtonClicked(joinCode));
+
+            if (lobby.Data != null && lobby.Data.ContainsKey("JoinCode"))
+            {
+                string lobbyId = lobby.Id;
+                string joinCode = lobby.Data["JoinCode"].Value;
+                button.onClick.AddListener(() => OnLobbyButtonClicked(lobbyId, joinCode));
+            }
+            else
+            {
+                button.interactable = false; // Lobby not ready yet
+            }
         }
     }
-
-    private void OnLobbyButtonClicked(string joinCode)
+    private void OnLobbyButtonClicked(string lobbyId, string joinCode)
     {
-        // Tell LobbyCreation to join this lobby using its join code
+        _joinedLobbyId = lobbyId;
         FindFirstObjectByType<LobbyCreation>().JoinLobbyByCode(joinCode);
     }
 
     private void OnDestroy()
     {
-        CancelInvoke(nameof(RefreshLobbyListRepeating)); // Stop refreshing when this object is destroyed
+        CancelInvoke(nameof(RefreshLobbyListRepeating));
     }
 }
