@@ -110,18 +110,21 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     private void HymnRoundEndClientRpc()
     {
         onHymnRoundEnd?.Invoke();
+        Debug.Log("HymnRoundEnd Event fired");
     }
 
     [ClientRpc]
     private void VotingRoundStartClientRpc()
     {
         onVotingRoundStart?.Invoke();
+        Debug.Log("VotingRoundStart Event fired");
     }
 
     [ClientRpc]
     private void VotingRoundEndClientRpc()
     {
         onVotingRoundEnd?.Invoke();
+        Debug.Log("VotingRoundEnd Event fired");
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -11,6 +11,12 @@ public class PromptUI : MonoBehaviour
 
     private bool displayed;
 
+    private void Awake()
+    {
+        GameManager.onHymnRoundEnd += DisableUI;
+        Debug.Log("PromptUI subscirbed to onHymnRoundEnd");
+    }
+
     public void SetPromptText()
     {
         
@@ -32,13 +38,10 @@ public class PromptUI : MonoBehaviour
 
     }
 
-    public void OnEnable()
-    {
-        GameManager.onHymnRoundEnd += DisableUI;
-    }
-
-    public void OnDisable()
+    private void OnDestroy()
     {
         GameManager.onHymnRoundEnd -= DisableUI;
     }
+
+    
 }

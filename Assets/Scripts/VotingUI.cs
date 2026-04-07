@@ -10,11 +10,20 @@ public class VotingUI : MonoBehaviour
     public List<Button> buttonList = new List<Button>();
     public List<VotingButton> votingButtons = new List<VotingButton>();
 
+    public GameObject votePanel;
+
     public bool hasVoted;
 
     void Awake()
     {
         // Later: Display hymns line by line in player color
+
+        GameManager.onVotingRoundStart += EnableUI;
+        Debug.Log("VotingUI subscirbed to onVotingRoundStart");
+        GameManager.onVotingRoundEnd += DisableUI;
+        Debug.Log("VotingUI subscirbed to onVotingRoundEnd");
+
+
     }
 
     public void RegisterVote(ulong votedPlayerClientId)
@@ -47,7 +56,7 @@ public class VotingUI : MonoBehaviour
             if (i >= playerClientIds.Count)
             {
                 buttonList[i].interactable = false;
-                votingButtons[i].targetClientId = 999999;
+                votingButtons[i].targetClientId = ulong.MaxValue;
                 continue;
             }
 
@@ -64,9 +73,8 @@ public class VotingUI : MonoBehaviour
 
     public void EnableUI()
     {
-        this.gameObject.SetActive(true);
+        votePanel.SetActive(true);
         hasVoted = false;
-        Debug.Log("Voting Round Start");
         foreach (Button button in buttonList)
         {
             button.interactable = true;
@@ -78,18 +86,14 @@ public class VotingUI : MonoBehaviour
 
     public void DisableUI()
     {
-        this.gameObject.SetActive(false);
+        votePanel.SetActive(false);
     }
 
-    public void OnEnable()
-    {
-        GameManager.onVotingRoundStart += EnableUI;
-        GameManager.onVotingRoundEnd += DisableUI;
-    }
-
-    private void OnDisable()
+    private void OnDestroy()
     {
         GameManager.onVotingRoundStart -= EnableUI;
         GameManager.onVotingRoundEnd -= DisableUI;
     }
+
+    
 }
