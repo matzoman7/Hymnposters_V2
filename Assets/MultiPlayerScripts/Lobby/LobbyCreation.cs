@@ -27,7 +27,6 @@ public class LobbyCreation : MonoBehaviour
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
-    // FIX: Send heartbeat to keep lobby alive
     private void Update()
     {
         if (_currentLobby == null) return;
