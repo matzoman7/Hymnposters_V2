@@ -299,6 +299,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 226082698}
   m_CullTransparentMesh: 1
+--- !u!1 &242218961
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 242218963}
+  - component: {fileID: 242218962}
+  m_Layer: 0
+  m_Name: LobbyCreation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &242218962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242218961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b37cf916c568616428b8c1bf63e43e15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _networkManager: {fileID: 1259590577}
+  _nameInputField: {fileID: 2083392202}
+  _lobbyNameInputField: {fileID: 1186125226}
+--- !u!4 &242218963
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242218961}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &256299024
 GameObject:
   m_ObjectHideFlags: 0
@@ -447,7 +494,6 @@ GameObject:
   - component: {fileID: 265986540}
   - component: {fileID: 265986539}
   - component: {fileID: 265986538}
-  - component: {fileID: 265986543}
   - component: {fileID: 265986544}
   - component: {fileID: 265986542}
   m_Layer: 5
@@ -558,21 +604,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &265986543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 265986537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b37cf916c568616428b8c1bf63e43e15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _networkManager: {fileID: 1259590577}
-  _nameInputField: {fileID: 2083392202}
-  _lobbyNameInputField: {fileID: 1186125226}
 --- !u!114 &265986544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1580,7 +1611,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 265986543}
+      - m_Target: {fileID: 242218962}
         m_TargetAssemblyTypeName: LobbyCreation, Assembly-CSharp
         m_MethodName: OnHostClicked
         m_Mode: 1
@@ -3162,3 +3193,4 @@ SceneRoots:
   - {fileID: 168341161}
   - {fileID: 612126849}
   - {fileID: 408438298}
+  - {fileID: 242218963}
