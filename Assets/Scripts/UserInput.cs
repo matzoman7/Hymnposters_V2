@@ -9,6 +9,13 @@ public class UserInput : MonoBehaviour
     public TMP_InputField playerInput;
 
     private string lastInputText = ""; // Track what was in the field last frame
+
+    private void Awake()
+    {
+        GameManager.onHymnRoundEnd += DisableUI;
+        Debug.Log("UserInput has subscribed to onHymnRoundEnd");
+    }
+
     private void Update()
     {
         // Only enable input if it's their turn
@@ -49,4 +56,17 @@ public class UserInput : MonoBehaviour
         playerID = (playerID + 1) % 4;
 
     }
+
+    public void DisableUI()
+    {
+        this.gameObject.SetActive(false);
+
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.onHymnRoundEnd -= DisableUI;
+    }
+
+    
 }

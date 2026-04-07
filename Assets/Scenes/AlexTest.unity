@@ -119,6 +119,80 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &22908165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 22908166}
+  - component: {fileID: 22908167}
+  m_Layer: 5
+  m_Name: Voting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &22908166
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 22908165}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 394712014}
+  m_Father: {fileID: 5229942299998659353}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &22908167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 22908165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 280153ac32cbed34e969f91d00dfcf8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hymnLines:
+  - {fileID: 931192844}
+  - {fileID: 1133222796}
+  - {fileID: 551025080}
+  - {fileID: 849048625}
+  - {fileID: 324858991}
+  - {fileID: 1119105393}
+  - {fileID: 129150369}
+  - {fileID: 25431119}
+  - {fileID: 840721586}
+  - {fileID: 158963547}
+  - {fileID: 1585121653}
+  - {fileID: 859839869}
+  buttonList:
+  - {fileID: 1011969650}
+  - {fileID: 1787135723}
+  - {fileID: 1532988203}
+  - {fileID: 1848518640}
+  votingButtons:
+  - {fileID: 1011969653}
+  - {fileID: 1787135726}
+  - {fileID: 1532988206}
+  - {fileID: 1848518643}
+  votePanel: {fileID: 394712013}
+  hasVoted: 0
 --- !u!1 &25431117
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,9 +748,8 @@ GameObject:
   - component: {fileID: 394712014}
   - component: {fileID: 394712016}
   - component: {fileID: 394712015}
-  - component: {fileID: 394712017}
   m_Layer: 5
-  m_Name: VotingUI
+  m_Name: VotingPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -689,7 +762,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 394712013}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.89, y: 0.89, z: 0.89}
   m_ConstrainProportionsScale: 1
@@ -712,12 +785,12 @@ RectTransform:
   - {fileID: 158963546}
   - {fileID: 1585121652}
   - {fileID: 859839868}
-  m_Father: {fileID: 5229942299998659353}
+  m_Father: {fileID: 22908166}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1820, y: 980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &394712015
 MonoBehaviour:
@@ -757,42 +830,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 394712013}
   m_CullTransparentMesh: 1
---- !u!114 &394712017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 394712013}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 280153ac32cbed34e969f91d00dfcf8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hymnLines:
-  - {fileID: 931192844}
-  - {fileID: 1133222796}
-  - {fileID: 551025080}
-  - {fileID: 849048625}
-  - {fileID: 324858991}
-  - {fileID: 1119105393}
-  - {fileID: 129150369}
-  - {fileID: 25431119}
-  - {fileID: 840721586}
-  - {fileID: 158963547}
-  - {fileID: 1585121653}
-  - {fileID: 859839869}
-  buttonList:
-  - {fileID: 1011969650}
-  - {fileID: 1787135723}
-  - {fileID: 1532988203}
-  - {fileID: 1848518640}
-  votingButtons:
-  - {fileID: 1011969653}
-  - {fileID: 1787135726}
-  - {fileID: 1532988206}
-  - {fileID: 1848518643}
-  hasVoted: 0
 --- !u!1 &468756708
 GameObject:
   m_ObjectHideFlags: 0
@@ -2366,7 +2403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetClientId: 0
-  voteManager: {fileID: 394712017}
+  voteManager: {fileID: 0}
 --- !u!1 &1050637990
 GameObject:
   m_ObjectHideFlags: 0
@@ -3519,7 +3556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetClientId: 0
-  voteManager: {fileID: 394712017}
+  voteManager: {fileID: 0}
 --- !u!1 &1582551257
 GameObject:
   m_ObjectHideFlags: 0
@@ -4071,7 +4108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetClientId: 0
-  voteManager: {fileID: 394712017}
+  voteManager: {fileID: 0}
 --- !u!1 &1848518638
 GameObject:
   m_ObjectHideFlags: 0
@@ -4219,7 +4256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetClientId: 0
-  voteManager: {fileID: 394712017}
+  voteManager: {fileID: 0}
 --- !u!1 &1972100833
 GameObject:
   m_ObjectHideFlags: 0
@@ -4965,10 +5002,10 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4716442122294619466, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2089604283}
+      addedObject: {fileID: 22908166}
     - targetCorrespondingSourceObject: {fileID: 4716442122294619466, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 394712014}
+      addedObject: {fileID: 2089604283}
     - targetCorrespondingSourceObject: {fileID: 4716442122294619466, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2016778328}
