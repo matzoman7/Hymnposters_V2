@@ -13,7 +13,7 @@ public class TypingIndicator : MonoBehaviour
             bool isMyTurn = GameManager.instance.IsMyTurn();
             bool someoneIsTyping = GameManager.instance.IsCurrentPlayerTyping();
 
-            if (!isMyTurn && someoneIsTyping)
+            if (!isMyTurn)
             {
                 string playerName = GameManager.instance.GetCurrentPlayerName();
                 typingText.text = $"{playerName} is typing...";
