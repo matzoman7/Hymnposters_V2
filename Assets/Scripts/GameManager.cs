@@ -30,6 +30,8 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
     private Dictionary<ulong, int> votesByPlayer = new Dictionary<ulong, int>();
     private HashSet<ulong> playersWhoAlreadyVoted = new HashSet<ulong>();
 
+    public GameObject winScreen;
+    public GameObject loseScreen;
 
     private int hymnsCount;
     private NetworkVariable<ulong> currentTurnClientId = new NetworkVariable<ulong>(0); // Starts at 0 (host goes first)
@@ -197,12 +199,12 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
             if (votedOutPlayer.Role == "Fallen Angel")
             {
                 Debug.Log("The impostor was caught!");
-                // TODO: Trigger Innocents Win
+                winScreen.SetActive(true);
             }
             else
             {
                 Debug.Log("Wrong vote! The impostor survives.");
-                // TODO: Trigger Fallen Angel Win or continue round
+                loseScreen.SetActive(true);
             }
         }
         else
