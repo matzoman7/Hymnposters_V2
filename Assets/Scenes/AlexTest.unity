@@ -168,18 +168,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 280153ac32cbed34e969f91d00dfcf8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hymnLines:
+  player1HymnLines:
   - {fileID: 931192844}
-  - {fileID: 1133222796}
-  - {fileID: 551025080}
-  - {fileID: 849048625}
   - {fileID: 324858991}
-  - {fileID: 1119105393}
-  - {fileID: 129150369}
-  - {fileID: 25431119}
   - {fileID: 840721586}
+  player2HymnLines:
+  - {fileID: 1133222796}
+  - {fileID: 1119105393}
   - {fileID: 158963547}
+  player3HymnLines:
+  - {fileID: 551025080}
+  - {fileID: 129150369}
   - {fileID: 1585121653}
+  player4HymnLines:
+  - {fileID: 849048625}
+  - {fileID: 25431119}
   - {fileID: 859839869}
   buttonList:
   - {fileID: 1011969650}
@@ -191,6 +194,10 @@ MonoBehaviour:
   - {fileID: 1787135726}
   - {fileID: 1532988206}
   - {fileID: 1848518643}
+  player1Color: {r: 0.9528302, g: 0.9528302, b: 0.9528302, a: 1}
+  player2Color: {r: 1, g: 0.9515147, b: 0.3915094, a: 1}
+  player3Color: {r: 1, g: 0.4009434, b: 0.4009434, a: 1}
+  player4Color: {r: 0.4292453, g: 0.4292453, b: 1, a: 1}
   votePanel: {fileID: 394712013}
   hasVoted: 0
 --- !u!1 &25431117
