@@ -10,6 +10,41 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
 {
     public static GameManager instance;
 
+    [System.Serializable]
+    public struct PlayerHymnData : INetworkSerializable
+    {
+        public ulong clientId;
+        public List<string> hymns;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref clientId);
+
+            // Serialize list length
+            int count = hymns == null ? 0 : hymns.Count;
+            serializer.SerializeValue(ref count);
+
+            if (serializer.IsReader)
+            {
+                hymns = new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    string line = "";
+                    serializer.SerializeValue(ref line);
+                    hymns.Add(line);
+                }
+            }
+            else // writer
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    string line = hymns[i];
+                    serializer.SerializeValue(ref line);
+                }
+            }
+        }
+    }
+
 
     public CameraMovement cameraScript;
     // Dictionary that stores hymns for each player
@@ -102,9 +137,34 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         if (hymnsCount == maxHymnsPerRound)
         {
             
+
             //trigger event that round for adding hymns is over
             HymnRoundEndClientRpc();
+
+            //Convert the dictonary to the new struct
+            List<PlayerHymnData> dataList = new List<PlayerHymnData>();
+
+            foreach (var entry in playerHymns)
+            {
+                dataList.Add(new PlayerHymnData
+                {
+                    clientId = entry.Key,
+                    hymns = new List<string>(entry.Value)
+                });
+            }
+            SendHymnsClientRpc(dataList.ToArray());
             VotingRoundStartClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    private void SendHymnsClientRpc(PlayerHymnData[] hymnDataArray)
+    {
+        playerHymns.Clear();
+
+        foreach (var data in hymnDataArray)
+        {
+            playerHymns[data.clientId] = data.hymns;
         }
     }
 

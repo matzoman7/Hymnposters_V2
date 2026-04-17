@@ -6,9 +6,16 @@ using Unity.Netcode;
 
 public class VotingUI : MonoBehaviour
 {
-    public List<TextMeshProUGUI> hymnLines = new List<TextMeshProUGUI>();
+    public List<TextMeshProUGUI> player1HymnLines = new List<TextMeshProUGUI>();
+    public List<TextMeshProUGUI> player2HymnLines = new List<TextMeshProUGUI>();
+    public List<TextMeshProUGUI> player3HymnLines = new List<TextMeshProUGUI>();
+    public List<TextMeshProUGUI> player4HymnLines = new List<TextMeshProUGUI>();
     public List<Button> buttonList = new List<Button>();
     public List<VotingButton> votingButtons = new List<VotingButton>();
+    public Color player1Color = Color.white;
+    public Color player2Color = Color.yellow;
+    public Color player3Color = Color.red;
+    public Color player4Color = Color.blue;
 
     public GameObject votePanel;
 
@@ -71,6 +78,46 @@ public class VotingUI : MonoBehaviour
         }
     }
 
+    public void displayHyms()
+    {
+        List<string> allPlayerHymns = new List<string>();
+        foreach (KeyValuePair<ulong, List<string>> playerEntry in GameManager.instance.playerHymns)
+        {
+            ulong clientId = playerEntry.Key;
+            List<string> hymns = playerEntry.Value;
+
+            for (int i = 0; i < hymns.Count; i++)
+            {
+                allPlayerHymns.Add(hymns[i]); //This results in allPlayerHymns having 0,1,2 be the first 3 hymns for player 1 then so on and so forth 
+            }
+        }
+        int j = 0;
+        foreach(TextMeshProUGUI hymnText in player1HymnLines)
+        {
+            hymnText.text = allPlayerHymns[j];
+            hymnText.color = player1Color;
+            j++;
+        }
+        foreach (TextMeshProUGUI hymnText in player2HymnLines)
+        {
+            hymnText.text = allPlayerHymns[j];
+            hymnText.color = player2Color;
+            j++;
+        }
+        foreach (TextMeshProUGUI hymnText in player3HymnLines)
+        {
+            hymnText.text = allPlayerHymns[j];
+            hymnText.color = player3Color;
+            j++;
+        }
+        foreach (TextMeshProUGUI hymnText in player4HymnLines)
+        {
+            hymnText.text = allPlayerHymns[j];
+            hymnText.color = player4Color;
+            j++;
+        }
+    }
+
     public void EnableUI()
     {
         votePanel.SetActive(true);
@@ -82,6 +129,7 @@ public class VotingUI : MonoBehaviour
 
         List<ulong> allPlayers = new List<ulong>(NetworkManager.Singleton.ConnectedClientsIds);
         AssignVoteTargets(allPlayers);
+        displayHyms();
     }
 
     public void DisableUI()
