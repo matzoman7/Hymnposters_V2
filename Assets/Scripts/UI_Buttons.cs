@@ -5,7 +5,7 @@ public class UI_Buttons : MonoBehaviour
 {
     [Header("Inscribed")]
     public string lobbyName;
-
+    public GameObject tutorialScreen;
     public void StartButton()
     {
         SceneManager.LoadScene("JoinLobbyScreen");
@@ -34,5 +34,15 @@ public class UI_Buttons : MonoBehaviour
     public void JoinLobbyScreen()
     {
         SceneManager.LoadScene("JoinLobbyScreen");
+    }
+
+    public void BackToMainButton()
+    {
+        tutorialScreen.SetActive(false);
+    }
+
+    public void GoToTutorialButton()
+    {
+        tutorialScreen.SetActive(true);
     }
 }
