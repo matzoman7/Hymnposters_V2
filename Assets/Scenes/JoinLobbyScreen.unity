@@ -251,7 +251,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 446931424}
         m_TargetAssemblyTypeName: UI_Buttons, Assembly-CSharp
-        m_MethodName: BackToStartScreen
+        m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -889,6 +889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lobbyName: TestLobby
+  tutorialScreen: {fileID: 0}
 --- !u!114 &446931425
 MonoBehaviour:
   m_ObjectHideFlags: 0
