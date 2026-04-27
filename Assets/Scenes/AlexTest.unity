@@ -1632,6 +1632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lobbyName: 
+  tutorialScreen: {fileID: 0}
 --- !u!114 &856832483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4863,7 +4864,7 @@ PrefabInstance:
       objectReference: {fileID: 856832482}
     - target: {fileID: 4222970375768431928, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: BackToStartScreen
+      value: RestartGame
       objectReference: {fileID: 0}
     - target: {fileID: 4514256290208106633, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_Name
@@ -5027,7 +5028,7 @@ PrefabInstance:
       objectReference: {fileID: 856832482}
     - target: {fileID: 8146092557186346540, guid: 0ea78be3053a6894aa5378edf3e8ceec, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: BackToStartScreen
+      value: RestartGame
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

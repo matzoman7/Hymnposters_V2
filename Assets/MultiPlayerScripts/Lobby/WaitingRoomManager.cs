@@ -21,6 +21,7 @@ public class WaitingRoomManager : NetworkBehaviour
         if (_startGameButton != null)
         {
             _startGameButton.gameObject.SetActive(IsServer);
+            _startGameButton.interactable = false; // Disabled until 4 players join
             _startGameButton.onClick.AddListener(OnStartGameClicked);
         }
 
@@ -55,6 +56,10 @@ public class WaitingRoomManager : NetworkBehaviour
         }
 
         RefreshAllClientsListClientRpc();
+
+        // Enable start button only when 4 players have joined
+        if (_startGameButton != null)
+            _startGameButton.interactable = NetworkManager.Singleton.ConnectedClientsIds.Count >= 4;
     }
 
     [ClientRpc] // Runs on all clients

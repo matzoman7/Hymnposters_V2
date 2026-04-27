@@ -259,12 +259,12 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
             if (votedOutPlayer.Role == "Fallen Angel")
             {
                 Debug.Log("The impostor was caught!");
-                winScreen.SetActive(true);
+                ShowWinScreenClientRpc();
             }
             else
             {
                 Debug.Log("Wrong vote! The impostor survives.");
-                loseScreen.SetActive(true);
+                ShowLoseScreenClientRpc();
             }
         }
         else
@@ -357,37 +357,15 @@ public class GameManager : NetworkBehaviour // NetworkBehaviour allows this to u
         Debug.Log("PlayerManager is ready! Requesting sync...");
         PlayerManager.Instance.RequestSyncServerRpc(NetworkManager.Singleton.LocalClientId);
     }
-
-    // Debug method to print all hymns in the dictionary (hook this to a button)
-    public void PrintAllHymns()
+    [ClientRpc]
+    private void ShowWinScreenClientRpc()
     {
-        Debug.Log("=== HYMN DICTIONARY DEBUG ===");
-        Debug.Log($"Total players in dictionary: {playerHymns.Count}");
+        winScreen.SetActive(true);
+    }
 
-        if (playerHymns.Count == 0)
-        {
-            Debug.Log("Dictionary is EMPTY!");
-            return;
-        }
-
-        foreach (KeyValuePair<ulong, List<string>> playerEntry in playerHymns)
-        {
-            ulong clientId = playerEntry.Key;
-            List<string> hymns = playerEntry.Value;
-
-            // Get player name if available
-            PlayerData player = PlayerManager.Instance?.GetPlayer(clientId);
-            string playerName = player != null ? player.PlayerName : $"Player {clientId}";
-
-            Debug.Log($"--- {playerName} (ClientId: {clientId}) ---");
-            Debug.Log($"  Total hymns: {hymns.Count}");
-
-            for (int i = 0; i < hymns.Count; i++)
-            {
-                Debug.Log($"  Hymn {i + 1}: {hymns[i]}");
-            }
-        }
-
-        Debug.Log("=== END DEBUG ===");
+    [ClientRpc]
+    private void ShowLoseScreenClientRpc()
+    {
+        loseScreen.SetActive(true);
     }
 }

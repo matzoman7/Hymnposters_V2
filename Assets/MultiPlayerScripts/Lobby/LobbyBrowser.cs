@@ -79,8 +79,7 @@ public class LobbyBrowser : MonoBehaviour
 
             QueryResponse response = await LobbyService.Instance.QueryLobbiesAsync(options);
             _availableLobbies = response.Results;
-
-            UpdateLobbyListUI();
+            UpdateLobbyListUI(); ;
         }
         catch (LobbyServiceException e)
         {
@@ -125,7 +124,12 @@ public class LobbyBrowser : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.LogWarning($"Failed to refresh joined lobby: {e.Message}");
-            _joinedLobbyId = null; // Lobby probably closed, go back to browsing
+
+            // Remove the dead lobby from UI before clearing the id
+            _availableLobbies.RemoveAll(l => l.Id == _joinedLobbyId);
+            UpdateLobbyListUI();
+
+            _joinedLobbyId = null;
         }
     }
 

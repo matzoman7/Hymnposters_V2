@@ -4,14 +4,15 @@ using TMPro;
 public class TypingIndicator : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI typingText;
+    private bool _votingStarted = false;
 
     private void Update()
     {
+        if (_votingStarted) return;
+
         if (GameManager.instance != null)
         {
-            //Only show typing indicator if it's not your turn
             bool isMyTurn = GameManager.instance.IsMyTurn();
-            bool someoneIsTyping = GameManager.instance.IsCurrentPlayerTyping();
 
             if (!isMyTurn)
             {
@@ -24,5 +25,21 @@ public class TypingIndicator : MonoBehaviour
                 typingText.gameObject.SetActive(false);
             }
         }
+    }
+
+    private void OnEnable()
+    {
+        GameManager.onVotingRoundStart += HideTypingIndicator;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.onVotingRoundStart -= HideTypingIndicator;
+    }
+
+    private void HideTypingIndicator()
+    {
+        _votingStarted = true;
+        typingText.gameObject.SetActive(false);
     }
 }
