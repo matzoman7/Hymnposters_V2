@@ -16,8 +16,18 @@ public class UI_Buttons : MonoBehaviour
         Application.Quit();
     }
 
-    public void BackToStartScreen()
+    public void RestartGame()
     {
+        // Clear all player data
+        PlayerManager.Instance?.ClearAllPlayers();
+
+        // Clear the UI list
+        PlayerListUI.Instance?.ClearPlayers();
+
+        // Shut down networking
+        if (Unity.Netcode.NetworkManager.Singleton != null)
+            Unity.Netcode.NetworkManager.Singleton.Shutdown();
+
         SceneManager.LoadScene("StartScene");
     }
 
