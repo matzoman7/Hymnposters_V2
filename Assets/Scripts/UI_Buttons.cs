@@ -45,6 +45,10 @@ public class UI_Buttons : MonoBehaviour
     {
         SceneManager.LoadScene("JoinLobbyScreen");
     }
+    public void MainMenuScreen()
+    {
+        SceneManager.LoadScene("StartScene");
+    }
 
     public void BackToMainButton()
     {

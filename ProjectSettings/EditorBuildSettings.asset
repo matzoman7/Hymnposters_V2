@@ -26,10 +26,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/KacyScene.unity
     guid: b87f80d704676174497bb4de10556db7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestLobby.unity
     guid: 78fa36d0d2f7195468559185e2392991
   - enabled: 1
